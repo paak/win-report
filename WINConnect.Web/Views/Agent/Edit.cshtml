@@ -1,0 +1,286 @@
+﻿@model WINConnect.Models.Agent
+@{
+    ViewBag.Title = "Agent";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden("AgentId")
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <i class="fa fa-gear"></i>
+                @Model.AgentName</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="control-label" for="AgentName">
+                            Company
+                            <abbr title="Required" class="required">*</abbr></label>
+                        @Html.TextBox("AgentName", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="control-label" for="RegistrationTypeId">
+                            Registration Type
+                            <abbr title="Required" class="required">*</abbr></label>
+                        @Html.DropDownList("RegistrationTypeId", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="control-label" for="IATACode">
+                            IATA Code</label>
+                        @Html.TextBox("IATACode", null, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="control-label" for="Addrs1">
+                            Address 1
+                            <abbr title="Required" class="required">*</abbr></label>
+                        @Html.TextBox("Addrs1", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="control-label" for="City">
+                            City
+                            <abbr title="Required" class="required">*</abbr></label>
+                        @Html.TextBox("CityCode", null, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="control-label" for="CountryCode">
+                            Country
+                            <abbr title="Required" class="required">*</abbr></label>
+                        @Html.TextBox("CountryCode", null, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.EditorFor(model => model.IsActivated)
+                                Active
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-xs-8">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                @Html.EditorFor(model => model.IsEYProgram)
+                                EY Program
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <fieldset>
+                <legend>Permissions</legend>
+                <div class="row">
+                    @foreach (var item in ViewBag.Roles)
+                    {
+                        <div class="col-md-2 checkbox">
+                            <label>
+                                <input type="checkbox" name="Agent_Roles" id="@item.Name" value="@item.Id" @(Model.Roles.FirstOrDefault(x => x.RoleId == item.Id) != null ? "checked" : "") >
+                                @item.Name
+                            </label>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Contact</legend>
+                <table class="table-no-border table-condensed">
+                    <tr>
+                        <th class="col-md-1">ID</th>
+                        <th class="col-md-1">Type</th>
+                        <th class="col-md-2">Name</th>
+                        <th class="col-md-3">Username</th>
+                        <th class="col-md-3">Permissions</th>
+                        <th class="col-md-2"></th>
+                    </tr>
+                    @foreach (var item in Model.Contacts)
+                    {
+                        <tr>
+                            <td class="col-md-1">
+                                <a href="/contact/edit/@item.ContactId">@item.ContactId</a>
+                            </td>
+                            <td class="col-md-1">
+                                @item.ContactType
+                            </td>
+                            <td class="col-md-2">
+                                @item.FirstName
+                                @item.LastName
+
+                            </td>
+                            <td class="col-md-3">
+                                @item.Email
+
+                            </td>
+                            <td class="col-md-3">
+                                <ul class="list-inline">
+                                    @foreach (var r in item.Roles)
+                                    {
+                                        <li>@r.Role.Name</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td class="col-md-2">
+                                <a class="mreq" href="#" data-url="/contact/details/@item.ContactId"><i class="fa fa-eye"></i></a>
+                                <div class="mreq_result" />
+                            </td>
+                        </tr>
+                    }
+                </table>
+
+            </fieldset>
+            <fieldset>
+                <legend>Air Carriers</legend>
+            </fieldset>
+            <fieldset>
+                <legend>Sea Carriers</legend>
+            </fieldset>
+
+            <button class="btn btn-primary" type="submit" id="create_agent">Save</button>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        /*
+        var ViewModel = function () {
+            var self = this;
+            self.agents = ko.observableArray();
+            self.error = ko.observable();
+            self.detail = ko.observable();
+
+            var agentsUri = '/api/agents/183066';
+
+            function ajaxHelper(uri, method, data) {
+                self.error(''); // Clear error message
+                return $.ajax({
+                    type: method,
+                    url: uri,
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: data ? JSON.stringify(data) : null
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    self.error(errorThrown);
+                });
+            }
+
+            function getAllAgents() {
+                ajaxHelper(agentsUri, 'GET').done(function (data) {
+                    self.detail(data);
+                });
+            }
+
+            self.getAgentDetail = function (item) {
+                ajaxHelper(agentsUri, 'GET').done(function (data) {
+                    self.detail(data);
+                });
+            }
+            // Fetch the initial data.
+            getAllAgents();
+        };
+
+        ko.applyBindings(new ViewModel());
+        */
+
+        $(function () {
+            var cache = {};
+            $("#CountryCode").autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    var term = request.term.toLowerCase(),
+                        element = this.element,
+                        cache = this.element.data('autocompleteCache') || {},
+                        foundInCache = false;
+
+                    $.each(cache, function (key, data) {
+                        if (term.indexOf(key) === 0 && data.length > 0) {
+                            response(data);
+                            foundInCache = true;
+                            return;
+                        }
+                    });
+
+                    if (foundInCache) return;
+
+                    $.ajax({
+                        url: "/values/countries",
+                        dataType: "json",
+                        data: { term: request.term },
+                        success: function (data) {
+                            var array = $.map(data, function (item) {
+                                return {
+                                    value: item.Code,
+                                    label: item.Code + ' - ' + item.Name
+                                };
+                            });
+                            //cache[term] = array;
+                            //element.data('autocompleteCache', cache);
+
+                            response(array);
+                        }
+                    });
+                }
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                var $a = $("<a></a>").text(item.label);
+                highlightText(this.term, $a);
+                return $("<li></li>").append($a).appendTo(ul);
+            };
+
+            $("#CityCode").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/values/unlocodes",
+                        dataType: "json",
+                        data: { term: request.term, countryCode: $('#CountryCode').val() },
+                        success: function (data) {
+                            var array = $.map(data, function (item) {
+                                return {
+                                    value: item.Code,
+                                    label: item.Code + ' - ' + item.Name
+                                };
+                            });
+                            response(array);
+                        }
+                    });
+                }
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                var $a = $("<a></a>").text(item.label);
+                highlightText(this.term, $a);
+                return $("<li></li>").append($a).appendTo(ul);
+            };
+
+            function highlightText(text, $node) {
+                var searchText = $.trim(text).toLowerCase(), currentNode = $node.get(0).firstChild, matchIndex, newTextNode, newSpanNode;
+                while ((matchIndex = currentNode.data.toLowerCase().indexOf(searchText)) >= 0) {
+                    newTextNode = currentNode.splitText(matchIndex);
+                    currentNode = newTextNode.splitText(searchText.length);
+                    newSpanNode = document.createElement("span");
+                    newSpanNode.className = "highlight";
+                    currentNode.parentNode.insertBefore(newSpanNode, currentNode);
+                    newSpanNode.appendChild(newTextNode);
+                }
+            }
+        });
+    </script>
+}

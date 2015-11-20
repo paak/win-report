@@ -1,0 +1,31 @@
+﻿@model IEnumerable<WINConnect.Models.FWBLog>
+
+@if (Model != null)
+{
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Format</th>
+                <th>Sent On</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MessageType</td>
+                    <td>@item.Message_Format</td>
+                    <td>@item.SentOn</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <text>
+    <i class="fa fa-warning"></i>
+    No log found
+    </text>
+}

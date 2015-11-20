@@ -1,0 +1,114 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@using WINConnect.Libs.Extensions;
+@using WINConnect.Models.Extensions;
+
+@model IPagedList<WINConnect.Models.Shipment>
+@{
+    ViewBag.Title = "Quotes";
+}
+@Html.Partial("_SearchForm")
+
+<table class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="col-md-2">Shipment</th>
+            <th class="col-md-3">Location</th>
+            <th class="col-md-4">From</th>
+            <th class="col-md-2">Date</th>
+            <th class="col-md-1">RFQ Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (WINConnect.Models.Shipment item in Model)
+        {
+            var rfqs = item.RFQs.OrderBy(x => x.RfqId).ToList();
+            <tr class="sender">
+                <td>
+                    <ul class="list-unstyled">
+                        <li>
+                            <i class="fa @(item.TransportMode.Code == "Air" ? "fa-plane" : "fa-ship")"></i>
+                            @item.ShipmentId: @item.Title
+                        </li>
+                        <li><span class="@item.Status.Code">@item.Status.Code</span></li>
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>@item.Locations.GetOriginLocation()</li>
+                        <li>@item.Locations.GetDestinationLocation()</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>@(item.Exporter == null ? "???" : item.Exporter.Agent.AgentName)</li>
+                        <li>@(item.Exporter == null ? "???" : item.Exporter.Agent.CityCode),
+                        @(item.Exporter == null ? "???" : item.Exporter.Agent.Country.Name)</li>
+                    </ul>
+                </td>
+                <td>
+                    @if (rfqs.Count > 0)
+                    {
+                        <ul class="list-unstyled">
+                            <li>Created: @rfqs.FirstOrDefault().CreatedOn.ToWINDateString()</li>
+                            <li>Expire: @rfqs.FirstOrDefault().RequiredDate.ToWINDateString()</li>
+                        </ul>
+                    }
+                </td>
+                <td>
+                    @if (rfqs.Count > 0)
+                    {
+                        <a href="#" class="showhide">
+                            <span class="badge">@rfqs.Count</span></a>
+                    }
+                </td>
+            </tr>
+                    if (rfqs != null)
+                    {
+            <tr class="hide">
+                <td colspan="7">
+                    <table class="table table-condensed">
+                        <tr>
+                            <th style="width: 40%">To</th>
+                            <th style="width: 30%">RFQ</th>
+                            <th style="width: 30%">Quote</th>
+                        </tr>
+                        @foreach (var rfq in rfqs)
+                        {
+                            <tr>
+                                <td>
+                                    <ul class="list-unstyled">
+                                        <li>@(rfq.Recipient == null ? "???" : rfq.Recipient.AgentName)</li>
+                                        <li>@(rfq.Recipient == null ? "???" : rfq.Recipient.CityCode),
+                                        @(rfq.Recipient == null ? "???" : rfq.Recipient.Country.Name)</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-unstyled">
+                                        <li>Status: <span class="@rfq.Status.Code">@rfq.Status.Code</span></li>
+                                        <!-- li>Created: @rfq.CreatedOn</li -->
+                                        <!-- li>Expiry: @rfq.RequiredDate</li -->
+                                    </ul>
+                                </td>
+                                <td>
+                                    @if (rfq.Quote != null)
+                                    {
+                                        <dl class="dl-horizontal small">
+                                            <dt>Status</dt>
+                                            <dd>@rfq.Quote.Status.Code</dd>
+                                            <dt>Created</dt>
+                                            <dd>@rfq.Quote.CreatedOn</dd>
+                                            <dt>Expiry</dt>
+                                            <dd>@rfq.Quote.ValidUntilDate</dd>
+                                        </dl>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+            </tr>
+                    }
+        }
+    </tbody>
+</table>

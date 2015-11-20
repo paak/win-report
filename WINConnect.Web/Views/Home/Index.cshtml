@@ -1,0 +1,293 @@
+﻿@model IEnumerable<WINConnect.Models.Agent>
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h3>Dashboard</h3>
+
+<div class="row">
+    <div class="col-sm-3 col-xs-6">
+        <h6>Peak times</h6>
+        <div id="chart2" class="line-chart"></div>
+    </div>
+    <div class="col-sm-3 col-xs-6">
+        <h6>Online vs. Direct</h6>
+        <div id="chart3" class="line-chart"></div>
+    </div>
+    <div class="col-sm-3 col-xs-6">
+        <h6>Abandoned</h6>
+        <div id="chart4" class="line-chart"></div>
+    </div>
+    <div class="col-sm-3 col-xs-6">
+        <h6>Total</h6>
+        <div id="chart5" class="line-chart"></div>
+    </div>
+</div>
+<!--/row-->
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="well">
+                    <h4 class="text-danger">
+                        <span id="AgentsCount" class="label label-danger pull-right">+</span>
+                        Active Agents</h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="well">
+                    <h4 class="text-success">
+                        <span id="FWBCount" class="label label-success pull-right">+</span>
+                        Air Waybills </h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="well">
+                    <h4 class="text-primary">
+                        <span id="FFRCount" class="label label-primary pull-right">+</span>
+                        Air Bookings </h4>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="well">
+                    <h4 class="text-success">
+                        <span id="SeaBookingCount" class="label label-success pull-right">+</span>
+                        Sea Bookings </h4>
+                </div>
+            </div>
+        </div>
+        <!--/row-->
+    </div>
+    <!--/col-12-->
+</div>
+<!--/row-->
+
+<div class="row">
+    <div class="col-md-3 col-sm-6">
+        <a href="javascript:;" class="dashboard-block">
+            <div class="rotate">
+                <i class="fa fa-money"></i>
+            </div>
+            <div class="details">
+                <span class="title">Total Revenue</span>
+                <span class="sub">$103K</span>
+            </div>
+            <!--/details-->
+            <i class="fa fa-chevron-right fa-2x more"></i>
+        </a>
+        <!--/dashboard-block1-->
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <a href="javascript:;" class="dashboard-block">
+            <div class="rotate">
+                <i class="fa fa-tachometer"></i>
+            </div>
+            <div class="details">
+                <span class="title">Burst Speed</span>
+                <span class="sub">4K MBPS</span>
+            </div>
+            <!--/details-->
+            <i class="fa fa-chevron-right fa-2x more"></i>
+        </a>
+        <!--/dashboard-block2-->
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <a href="javascript:;" class="dashboard-block">
+            <div class="rotate">
+                <i class="fa fa-users"></i>
+            </div>
+            <div class="details">
+                <span class="title">Total Visitors</span>
+                <span class="sub">28K</span>
+            </div>
+            <!--/details-->
+            <i class="fa fa-chevron-right fa-2x more"></i>
+        </a>
+        <!--/dashboard-block3-->
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <a href="javascript:;" class="dashboard-block">
+            <div class="rotate">
+                <i class="fa fa-user"></i>
+            </div>
+            <div class="details">
+                <span class="title">New Signups</span>
+                <span class="sub">83</span>
+            </div>
+            <!--/details-->
+            <i class="fa fa-chevron-right fa-2x more"></i>
+        </a>
+        <!--/dashboard-block4-->
+    </div>
+</div>
+<!--/row-->
+
+@section scripts{
+    <style>
+        /*Dashboard example template from Bootply */
+        .big-chart {
+            width: 100%;
+            height: 228px;
+        }
+
+        .realtime {
+            position: absolute;
+            right: 35px;
+            bottom: 35px;
+        }
+
+        .line-chart {
+            width: 100%;
+            height: 100px;
+        }
+
+        .donut {
+            width: 100%;
+            height: 120px;
+        }
+
+        .donut-label {
+            position: absolute;
+            left: 0;
+            top: 25%;
+            font-size: 20pt;
+            color: #ddd;
+            width: 100%;
+            height: 120px;
+            text-align: center;
+        }
+
+        .bar-chart, .pie-chart {
+            width: 100%;
+            height: 40px;
+        }
+
+        .progress {
+            height: 11px;
+        }
+
+        .progress-sm {
+            height: 8px;
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            padding: 2px;
+            opacity: 0.9;
+        }
+
+        .sparklines {
+            margin-top: 20px;
+            padding-bottom: 5px;
+            -moz-box-shadow: 0 0 0;
+            -webkit-box-shadow: 0 0 0;
+            box-shadow: 0 0 0;
+        }
+
+        .border-right {
+            border-right: 1px solid #eee;
+        }
+
+        .dashboard-block, .dashboard-block:hover, .dashboard-block:active, .dashboard-block:focus {
+            color: #606060;
+            text-decoration: none;
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+            outline: none;
+        }
+
+        .dashboard-block {
+            position: relative;
+            display: block;
+            padding: 30px 20px;
+            background-color: #eee;
+            opacity: 0.9;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+            .dashboard-block .rotate {
+                z-index: 8;
+                float: right;
+                height: 100%;
+            }
+
+                .dashboard-block .rotate i {
+                    position: absolute;
+                    left: 0;
+                    left: auto;
+                    right: 0;
+                    bottom: 0;
+                    display: block;
+                    height: 65px;
+                    font-size: 75px;
+                    -webkit-transform: rotate(-40deg);
+                    -moz-transform: rotate(-40deg);
+                    -o-transform: rotate(-40deg);
+                    -ms-transform: rotate(-40deg);
+                    transform: rotate(-40deg);
+                    text-shadow: 1px 0 #ddd;
+                }
+
+            .dashboard-block i, .dashboard-block:hover i, .dashboard-block:active i, .dashboard-block:focus i {
+                color: #e2e2e2;
+            }
+
+            .dashboard-block .more {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 16px;
+                color: rgba(0, 0, 0, 0.25) !important;
+                text-shadow: none;
+            }
+
+            .dashboard-block .details {
+                position: relative;
+                z-index: 10;
+                float: left;
+                margin-top: -10px;
+                text-align: left;
+            }
+
+            .dashboard-block .title {
+                display: block;
+                margin-bottom: 1em;
+                font-size: 13px;
+                text-transform: uppercase;
+            }
+
+            .dashboard-block .sub {
+                display: block;
+                font-size: 32px;
+            }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            //$('span#AgentCount').load('/dashboard/index');
+            $.ajax({
+                url: "/dashboard/index",
+                dataType: "json",
+                //data: { term: request.term },
+                success: function (data) {
+                    //cache[term] = data;
+                    //response(data);
+                    $('span#AgentsCount').text(numberWithCommas(data.AgentsCount));
+                    $('span#FWBCount').text(numberWithCommas(data.FWBCount));
+                    $('span#FFRCount').text(numberWithCommas(data.FFRCount));
+                    $('span#SeaBookingCount').text(numberWithCommas(data.SeaBookingCount));
+                }
+            });
+
+            function numberWithCommas(x) {
+                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+        });
+    </script>
+}

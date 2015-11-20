@@ -1,0 +1,120 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@{
+    string viewName = ((string)ViewBag.Title).Trim().ToLower();
+
+    // Create span
+    //MvcHtmlString span = Html.Span(new { @class = "clearer form-control-feedback fa fa-remove" });
+    MvcHtmlString span = new MvcHtmlString("");
+}
+@using (Html.BeginForm())
+{
+    @Html.Hidden("sort")
+    @Html.Hidden("sortdir")
+
+    <div class="row">
+        <div class="form-group form-group-sm">
+            <label class="col-sm-1 control-label" for="agentname">Agent</label>
+            <div class="col-md-4">
+                <div class="has-feedback">
+                    @Html.TextBox("agentName", null, new { @class = "form-control hasclear" })
+                    @span
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group has-feedback">
+                    <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                    @Html.TextBox("fromDate", null, new { @class = "form-control hasclear" })
+                    @span
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="input-group has-feedback">
+                    <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                    @Html.TextBox("toDate", null, new { @class = "form-control hasclear" })
+                    @span
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group form-group-sm">
+            <label class="col-sm-1 control-label" for="carrier">Country</label>
+            <div class="col-md-4">
+                <div class="has-feedback">
+                    @Html.TextBox("country", null, new { @class = "form-control hasclear" })
+                    @span
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group has-feedback">
+                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                    @Html.TextBox("refNumber", null, new { @class = "form-control hasclear" })
+                    @span
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" id="search" class="btn btn-primary btn-sm" data-action="/@viewName">
+                    <i class="fa fa-search"></i>
+                    Search</button>
+            </div>
+        </div>
+    </div>
+    if (viewName.Equals("quotes"))
+    {
+    <div class="row">
+        <div class="form-group form-group-sm">
+            <label class="col-sm-1 control-label" for="mode">Mode</label>
+            <div class="col-md-4">
+                <label class="radio-inline">
+                    @Html.RadioButton("mode", "") All
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButton("mode", "ocean") Sea
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButton("mode", "air") Air
+                </label>
+            </div>
+
+            <label class="col-sm-1 control-label" for="status">Status</label>
+            <div class="col-md-4">
+                <label class="radio-inline">
+                    @Html.RadioButton("status", "") All
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButton("status", "active") Active
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButton("status", "expired") Expired
+                </label>
+            </div>
+        </div>
+    </div>
+    }
+    else if (viewName.Equals("airfreight") || viewName.Equals("airbooking") || viewName.Equals("seabooking"))
+    {
+    <div class="row">
+        <div class="form-group form-group-sm">
+            <label class="col-sm-1 control-label" for="carrier">Carrier</label>
+            <div class="col-md-4">
+                <div class="has-feedback">
+                    @Html.TextBox("carrier", null, new { @class = "form-control hasclear" })
+                    @span
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+}
+
+@Html.PagedListPager((IPagedList)Model,
+    page => Url.Action("Index", new { page }),
+    new PagedListRenderOptions()
+    {
+        DisplayItemSliceAndTotal = true,
+        ItemSliceAndTotalFormat = "Showing {0}-{1} of {2}",
+        UlElementClasses = new string[] { "pagination", "pagination-sm" }
+    })
+

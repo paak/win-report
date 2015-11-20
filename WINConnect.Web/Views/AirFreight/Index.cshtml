@@ -1,0 +1,79 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@using WINConnect.Libs.Extensions;
+
+@model IPagedList<WINConnect.Models.ViewMAWB>
+@{
+    ViewBag.Title = "Airfreight";
+}
+@Html.Partial("_SearchForm")
+
+<table class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="col-md-1">Country</th>
+            <th class="col-md-3">Agent</th>
+            <th class="col-md-1">Awb Number</th>
+            <th class="col-md-2">Airline</th>
+            <th class="col-md-1">eAwb</th>
+            <th class="col-md-1">Houses</th>
+            <th class="col-md-1">Route/Flight</th>
+            <th class="col-md-1">FWB SentOn</th>
+            <th class="col-md-1">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.AgentCountry</td>
+                <td>
+                    @item.AgentName</td>
+                <td>
+                    @Html.ActionLink(string.Format("{0}-{1}", item.AirlinePrefix, item.AwbNumber),
+                                 "Details",
+                                 new { id = item.MawbId })
+                </td>
+                <td>
+                    @item.IATACode - @item.AirlineName</td>
+                <td>
+                    @Html.Raw(item.eAwb.ToIcon())</td>
+                <td>
+                    @if (item.HawbCount > 0)
+                    {
+                        <a href="#" class="openmodal" data-url="/FHL?mawbId=@item.MawbId" data-toggle="modal" data-target="#myModal">@item.HawbCount</a>
+                    }
+                    else
+                    {
+                        @item.HawbCount
+                    }
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>@string.Format("{0}-{1}", item.Origin, item.Destination)</li>
+                        <li>@string.Format("{0}{1:d}", item.IATACode, item.FlightDate)</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>@item.MawbSentOn.GetTimeSpan()</li>
+                        <li><a href="#" class="openmodal" data-url="/fwb?mawbId=@item.MawbId" data-toggle="modal" data-target="#myModal">
+                            @item.MawbSentOn
+                        </a></li>
+                    </ul>
+                </td>
+                <td>
+                    @if (item.MawbStatus != "ShipmentAccepted")
+                    {
+                        @item.MawbStatus
+                    }
+                    else
+                    {
+                        <a href="#" class="openmodal" data-url="/FSU?AwbPrefix=@item.AirlinePrefix&AwbNumber=@item.AwbNumber" data-toggle="modal" data-target="#myModal">@item.MawbStatus</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

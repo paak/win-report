@@ -1,0 +1,28 @@
+﻿@using WINConnect.Libs.Extensions
+@model IEnumerable<WINConnect.Models.FSU_Detail>
+
+@{
+    Layout = null;
+    ViewBag.Title = "Air Waybills status";
+}
+
+@if (Model != null)
+{
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <th data-sort="">Status</th>
+                <th data-sort="">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.StatusCode</td>
+                    <td>@item.MessageOn</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

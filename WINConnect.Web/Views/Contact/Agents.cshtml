@@ -1,0 +1,29 @@
+﻿@using WINConnect.Libs.Extensions;
+
+@model IEnumerable<WINConnect.Models.Contact>
+
+@{
+    Layout = null;
+}
+
+<table class="table table-condensed table-stripped">
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Active</th>
+        <th>Confirm</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.FirstName</td>
+            <td>@item.LastName</td>
+            <td>@item.Email</td>
+            <td>@Html.Raw(item.IsActivated.ToIcon())</td>
+            <td>@Html.Raw(item.Memberships.IsConfirmed.ToIcon())</td>
+            <td><a href="/contact/edit/@item.ContactId">Edit</a></td>
+        </tr>
+    }
+</table>

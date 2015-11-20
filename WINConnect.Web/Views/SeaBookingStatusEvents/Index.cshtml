@@ -1,0 +1,62 @@
+﻿@using WINConnect.Models
+
+@model WINConnect.Models.SeaBookingStatusEvent
+
+@{
+    Layout = null;
+}
+
+@if (Model != null)
+{
+    if (Model.References != null)
+    {
+        StatusEvent_Reference bookingNo = Model.References.FirstOrDefault(x => x.Key == "BookingNumber");
+        StatusEvent_Reference blNo = Model.References.FirstOrDefault(x => x.Key == "BillOfLadingNumber");
+
+        if (bookingNo != null)
+        {
+    <h3>Booking No. @bookingNo.Value</h3>
+        }
+        if (blNo != null)
+        {
+    <span>BL No. @blNo.Value</span>
+        }
+    }
+
+    <ul class="list-unstyled">
+        <li></li>
+    </ul>
+    
+    <ul class="list-unstyled">
+        @foreach (var item in Model.Equipments)
+        {
+            <li>@item.EquipmentLoadType</li>
+            <li>@item.EquipmentTypeCode</li>
+            <li>@item.EquipmentIdentifier</li>
+            <li>
+                <ul class="list-unstyled">
+                    @foreach (var evt in item.Events)
+                    {
+                        <li>@evt.EventCode @evt.EventDateType @evt.EventDateTime @evt.LocationCode @evt.LocationType</li>
+                        <li>
+                            <ul class="list-unstyled">
+                                @foreach (var l in evt.Locations)
+                                {
+                                    <li>@l.LocationCode @l.LocationName @l.ArrivalActual</li>
+                                }
+                            </ul>
+                        </li>
+                        <li>
+                            <ul class="list-unstyled">
+                                @foreach (var l in evt.Transport)
+                                {
+                                    <li>@l.CarrierSCAC @l.ConveyanceName @l.VoyageTripNumber</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+}

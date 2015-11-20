@@ -1,0 +1,68 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<WINConnect.Models.AirBooking>
+@{
+    ViewBag.Title = "AirBooking";
+}
+@Html.Partial("_SearchForm")
+
+<table class="table table-striped table-condensed">
+    <thead>
+        <tr>
+            <th class="col-md-1">Country</th>
+            <th class="col-md-3">Agent</th>
+            <th class="col-md-2">Awb Number</th>
+            <th class="col-md-3">Routings</th>
+            <th class="col-md-2">Booking</th>
+            <th class="col-md-1">WCA Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img src="/images/flags/@(item.CountryCode).png" />
+                    @item.CountryName</td>
+                <td>
+                    @item.AgentName</td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-plane"></i>
+                            @item.IATACode - @item.AirlineName</li>
+                        <li><i class="fa fa-barcode"></i>
+                            @item.AirlinePrefix-@item.AWBNumber</li>
+                        <li><i class="fa fa-map-marker"></i>
+                            @item.OriginCode - @item.DestinationCode</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        @foreach (var routing in item.Routings)
+                        {
+                            //BKK-BOM/XX123/20-05-15/Sent (NN
+                            <li class="fixed-width-font">
+                                @string.Format("{0}-{1}/{2}{3}/{4:MM/dd/yyyy}/{5}-{6}"
+                                    , routing.FromAirportCode
+                                    , routing.ToAirportCode
+                                    , routing.CarrierCode
+                                    , routing.FlightNumber
+                                    , routing.FlightDate
+                                    , routing.StatusCode
+                                    , routing.StatusName)</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>@item.Channel</li>
+                        <li><a class="openmodel" href="/FFR?bookingId=@item.BookingId" data-url="/FFR?bookingId=@item.BookingId" data-toggle="modal" data-target="#myModal">@item.StatusName</a></li>
+                        <li><a class="openmodel" href="/FFA?awbPrefix=@item.AirlinePrefix&awbNumber=@item.AWBNumber" data-url="/FFA?awbPrefix=@item.AirlinePrefix&awbNumber=@item.AWBNumber" data-toggle="modal" data-target="#myModal">@item.SentOn</a></li>
+                    </ul>
+                </td>
+                <td>@Html.Raw(item.SpecialRates ? "<i class='fa fa-check-square-o'/>" : "")</td>
+            </tr>
+        }
+    </tbody>
+</table>

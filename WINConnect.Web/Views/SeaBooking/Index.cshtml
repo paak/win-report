@@ -1,0 +1,68 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@using WINConnect.Models;
+@using WINConnect.Models.Extensions;
+
+@model IPagedList<WINConnect.Models.SeaBooking>
+@{
+    ViewBag.Title = "SeaBooking";
+}
+@Html.Partial("_SearchForm")
+
+<table class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="col-md-1" data-sort="country"><a href="#">Country</a></th>
+            <th class="col-md-3" data-sort="agent"><a href="#">Agent</a></th>
+            <th class="col-md-2">References</th>
+            <th class="col-md-1">Containers</th>
+            <th class="col-md-1" data-sort="carrier"><a href="#">Carrier</a></th>
+            <th class="col-md-1">Source</th>
+            <th class="col-md-1">Location</th>
+            <th class="col-md-1" data-sort="updated"><a href="#">Updated</a></th>
+            <th class="col-md-1" data-sort="status"><a href="#">Status</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var refInfo = item.References
+                .Where(x => x.Number != null && x.Type != null &&
+                      (x.Type.Code.Contains("BillOfLading") || x.Type.Code.Contains("INTTRA") || x.Type.Code.Contains("Booking")))
+                .GroupBy(x => x.TypeId)
+                .Select(g => g.First());
+            <tr>
+                <td>
+                    <img src="/images/flags/@(item.Created.Agent.CountryCode).png" />
+                    @item.Created.Agent.Country.Name
+                </td>
+                <td>
+                    @item.Created.Agent.AgentName</td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>WIN: @item.BookingId</li>
+                        @foreach (var refNumber in refInfo)
+                        {
+                            <li>@refNumber.Type.Code.Replace("Number", "").Replace("Reference", "").Replace("BillOfLading", "BL")
+                                : @refNumber.Number</li>
+                        }
+                    </ul>
+                </td>
+                <td>@item.Containers.Sum(x => x.Quantity)</td>
+                <td>@item.CarrierSCAC</td>
+                <td>@Html.Raw(item.SourceId == 1 ? "<img src=\"/images/winicon.png\" alt=\"WIN\" />" : "<i class=\"fa fa-phone\"></i>")</td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>@item.Locations.GetPOL()</li>
+                        <li>@item.Locations.GetPOD()</li>
+                    </ul>
+                </td>
+                <td>@item.UpdatedOn</td>
+                <td>@(item.Status == null ? item.Status.ToString() : item.Status.Code)
+                    <br />
+                    <a href="#" class="openmodal" data-url="/SeaBookingStatusEvents/?bookingId=@item.BookingId" data-toggle="modal" data-target="#myModal">Status</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

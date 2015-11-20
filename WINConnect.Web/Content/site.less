@@ -1,0 +1,140 @@
+﻿// Core variables and mixins
+@import "bootstrap/variables.less";
+@import "bootstrap/mixins.less";
+
+body {
+    padding-top: 60px;
+    padding-bottom: 20px;
+}
+
+/* Allow only vertical resizing of textareas. */
+textarea {
+    resize: vertical;
+}
+
+form div.row {
+    padding-bottom: 5px;
+}
+
+span.clearer:hover {
+    cursor: pointer;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-error {
+    color: @brand-danger;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid @brand-danger;
+    /*background-color: #fee;*/
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: @brand-danger;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.table {
+    table-layout: fixed;
+}
+
+    .table th, .table td,
+    .table-no-border th, .table-no-border td {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+    }
+
+        .table td .fa {
+            width: 18px;
+        }
+
+.table-no-border > thead > tr > th,
+.table-no-border > tbody > tr > th,
+.table-no-border > tfoot > tr > th,
+.table-no-border > thead > tr > td,
+.table-no-border > tbody > tr > td,
+.table-no-border > tfoot > tr > td,
+.table-no-border > tbody,
+.table-no-border > thead,
+.table-no-border > tfoot {
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+.fixed-width-font {
+    font-family: 'Courier New', Courier, 'Nimbus Mono L', monospace;
+    font-size: 9pt;
+}
+
+.required {
+    color: @brand-danger;
+}
+
+legend {
+    color: @brand-primary;
+}
+/* Quotes */
+.AwaitingConfirmation {
+    color: @brand-warning;
+}
+
+.Awarded {
+    color: @brand-success;
+}
+
+.Cancelled {
+    color: @brand-danger;
+}
+
+.Declined {
+    color: @brand-danger;
+}
+
+.Draft {
+    color: @brand-info;
+}
+
+.Expired {
+    color: @gray;
+}
+
+.Interested {
+    color: @brand-primary;
+}
+
+.New {
+    color: @brand-danger;
+}
+
+.Request {
+}
+
+.Sent {
+    color: @brand-primary;
+}
+/* Contact */
+.Primary {
+    color: @brand-primary;
+}
+
+.Information {
+    color: @brand-info;
+}
+
+.API {
+    color: @brand-success;
+}

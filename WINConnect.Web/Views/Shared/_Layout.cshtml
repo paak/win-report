@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+@* lang - The language of the page. *@
+@* no-js - The no JavaScript class is removed by modernizr if JavaScript is available. *@
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - @Application.Name</title>
+    <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" />
+    @* theme-color - The colour of the toolbar in Chrome M39+
+       See http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android *@
+    <meta name="theme-color" content="#1E1E1E">
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/fa")
+    @Styles.Render("~/Content/jqueryui")
+    @Scripts.Render("~/scripts/modernizr")
+</head>
+<body>
+    @* Skip to main content link for people who use screen readers. sr-only makes this only visible to screen readers.
+        See http://a11yproject.com/posts/skip-nav-links/. *@
+    <a href="#main" class="sr-only sr-only-focusable">Skip to main content</a>
+    <header>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand" role="banner" href="/home">@Application.ShortName</a>
+                </div>
+                <div id="navbarCollapse" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        @Html.MenuLink("Agent", "Index", "Agent")
+                        @Html.MenuLink("Quotes", "Index", "Quotes")
+                        @Html.MenuLink("AirBooking", "Index", "AirBooking")
+                        @Html.MenuLink("AirFreight", "Index", "AirFreight")
+                        @Html.MenuLink("SeaBooking", "Index", "SeaBooking")
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="main" class="container" role="main">
+        <!--[if lt IE 8]>
+            <div class="alert alert-warning" role="alert">
+                <p>You are using an outdated browser. Please <a class="alert-link" href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            </div>
+        <![endif]-->
+        @RenderBody()
+    </div>
+    <hr />
+    <footer role="contentinfo">
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year - @Application.Name</p>
+        </div>
+    </footer>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/scripts/jquery")
+    @Scripts.Render("~/scripts/jqueryval")
+    @Scripts.Render("~/scripts/jqueryui")
+    @Scripts.Render("~/scripts/bootstrap")
+    @Scripts.Render("~/scripts/winapp")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

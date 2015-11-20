@@ -1,0 +1,119 @@
+﻿@using PagedList;
+@using WINConnect.Libs.Extensions;
+@using WINConnect.Models;
+@using WINConnect.Models.Extensions;
+
+@model IPagedList<Agent>
+@{
+    ViewBag.Title = "Agent";
+}
+@Html.Partial("_SearchForm")
+
+<table class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="col-md-3" data-sort="agentname">Name</th>
+            <th class="col-md-1" data-sort="createdon">Created</th>
+            <th class="col-md-1">Active</th>
+            <th class="col-md-2">Contacts</th>
+            <th class="col-md-2">User</th>
+            <th class="col-md-2">Latest Login</th>
+            <th class="col-md-1">Users</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Agent item in Model)
+        {
+            ICollection<Contact> contacts = item.Contacts.OrderByDescending(x => x.Logins.Any(y => y.LoggedOn != null)).ToList();
+            Contact firstContact = contacts.FirstOrDefault();
+            <tr>
+                <td>
+                    <ul class="list-unstyled">
+                        <li><a href="/agent/edit/@item.AgentId">@item.AgentName</a></li>
+                        <li>@item.CityCode, @item.CountryCode</li>
+                    </ul>
+                </td>
+                <td>
+                    @item.CreatedOn
+                </td>
+                <td>
+                    @Html.Raw(item.IsActivated.ToIcon())
+                </td>
+                @if (firstContact != null)
+                {
+                    <td>
+                        <ul class="list-unstyled">
+                            <li class="@firstContact.ContactType">@firstContact.ContactType</li>
+                            <li>@firstContact.Email</li>
+                            <li>
+                                @if (firstContact.Memberships.IsConfirmed)
+                                {
+                                    <text>Activated on </text>
+                                    @firstContact.Memberships.PasswordChangedDate
+                                }
+                            </li>
+                        </ul>
+                    </td>
+                    <td>@firstContact.Quotes.GetLatestQuote().CreatedOn</td>
+                    <td>@firstContact.Logins.GetLastLogin()</td>
+                }
+                else
+                {
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                }
+                <td>
+                    <a class="openmodal" href="/contact/agents/@item.AgentId" data-url="/contact/agents/@item.AgentId">
+                        <span class="badge">@item.Contacts.Count</span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts {
+    @*    <script type="text/javascript" src="~/Scripts/agent.js"></script>*@
+    <script>
+        $(function () {
+            var cache = {};
+            $("#agentName").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    var term = request.term;
+                    if (term in cache) {
+                        response(cache[term]);
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "/agent/search",
+                        dataType: "json",
+                        data: { term: request.term },
+                        success: function (data) {
+                            cache[term] = data;
+                            response(data);
+                        }
+                    });
+                }
+            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                var $a = $("<a></a>").text(item.label);
+                highlightText(this.term, $a);
+                return $("<li></li>").append($a).appendTo(ul);
+            };
+
+            function highlightText(text, $node) {
+                var searchText = $.trim(text).toLowerCase(), currentNode = $node.get(0).firstChild, matchIndex, newTextNode, newSpanNode;
+                while ((matchIndex = currentNode.data.toLowerCase().indexOf(searchText)) >= 0) {
+                    newTextNode = currentNode.splitText(matchIndex);
+                    currentNode = newTextNode.splitText(searchText.length);
+                    newSpanNode = document.createElement("span");
+                    newSpanNode.className = "highlight";
+                    currentNode.parentNode.insertBefore(newSpanNode, currentNode);
+                    newSpanNode.appendChild(newTextNode);
+                }
+            }
+        });
+
+    </script>
+}
