@@ -1,0 +1,11 @@
+﻿@model WINConnect.Models.ViewMAWB
+@{
+    ViewBag.Title = "Air Waybill";
+}
+
+<h2>@Model.AirlinePrefix-@Model.AwbNumber</h2>
+
+<h3>Agent</h3>
+<ul class="list-unstyled">
+    <li>@Model.AgentName/@Model.AgentCity</li>
+</ul>

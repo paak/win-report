@@ -1,8 +1,10 @@
 ﻿using PagedList;
 using System;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 using WINConnect.Libs.Extensions;
 using WINConnect.Models;
 
@@ -10,14 +12,14 @@ namespace WINConnect.Web.Controllers
 {
     public class AgentController : Controller
     {
-        private UnitOfWork _uow = new UnitOfWork();
+        private WINContext db = new WINContext();
 
         //
         // GET: /Agent/
         public ActionResult Index(string agentname, string country, string refNumber, string carrier,
             DateTime? fromDate, DateTime? toDate, string sort, string sortDir, int page = 1, int pageSize = 15)
         {
-            IQueryable<Agent> agents = _uow.AgentRepository.Get();
+            IQueryable<Agent> agents = db.Agents;
 
             agentname = agentname.ToValueOrEmpty();
             if (!agentname.IsEmpty())
@@ -30,7 +32,7 @@ namespace WINConnect.Web.Controllers
             {
                 agents = agents.Where(x => x.Country.Code.Contains(country) || x.Country.Name.Contains(country));
             }
-            //agents = agents.OrderByDescending(x => x.Contacts.Any(y => y.Logins.Any(z => z.LoggedOn != null)));
+            agents = agents.AsNoTracking();
             agents = agents.OrderByDescending(x => x.UpdatedOn);
 
             IPagedList<Agent> onePageOfAgents = agents.ToPagedList(page, pageSize);
@@ -42,14 +44,14 @@ namespace WINConnect.Web.Controllers
         // GET: /Agent/Edit/5
         public ActionResult Edit(int id)
         {
-            Agent agent = _uow.AgentRepository.GetById(id);
+            Agent agent = db.Agents.Find(id);
 
             // Registration Type
-            var regType = _uow.ListValuesRepository.Get(x => x.Identifier == "RegistrationType");
+            var regType = db.ListValues.Where(x => x.Identifier == "RegistrationType");
             ViewBag.RegistrationTypeId = new SelectList(regType, "Id", "Name", agent.RegistrationTypeId);
 
             // Permissions
-            var perms = _uow.RolesRepository.Get().OrderBy(x => x.Name);
+            var perms = db.Roles.OrderBy(x => x.Name);
             ViewBag.Roles = perms;
 
             return View(agent);
@@ -58,9 +60,9 @@ namespace WINConnect.Web.Controllers
         //
         // POST: /Agent/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, Agent agentToUpdate)
+        public async Task<ActionResult> Edit(int id, Agent agentToUpdate)
         {
-            Agent agent = _uow.AgentRepository.GetById(id);
+            Agent agent = db.Agents.Find(id);
 
             if (agent.AgentId != agentToUpdate.AgentId)
             {
@@ -81,8 +83,8 @@ namespace WINConnect.Web.Controllers
                 agent.IsEYProgram = agentToUpdate.IsEYProgram;
                 agent.RegistrationTypeId = agentToUpdate.RegistrationTypeId;
 
-                _uow.AgentRepository.Update(agent);
-                _uow.SaveChanges();
+                db.Entry(agent).State = EntityState.Modified;
+                await db.SaveChangesAsync();
 
                 return RedirectToAction("Index");
             }
@@ -92,28 +94,11 @@ namespace WINConnect.Web.Controllers
             }
         }
 
-        [HttpGet]
-        public JsonResult search(string term)
-        {
-            if (string.IsNullOrWhiteSpace(term))
-            {
-                return null;
-            }
-            term = term.Trim();
-            var agents = _uow.AgentRepository
-                 .Get(x => x.AgentName.Contains(term))
-                 .OrderBy(x => x.AgentName)
-                 .Select(x => x.AgentName);
-
-            return Json(agents, JsonRequestBehavior.AllowGet);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                //db.Dispose();
-                _uow.Dispose();
+                db.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -1,8 +1,10 @@
 ﻿using PagedList;
 using System;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 using WINConnect.Libs.Extensions;
 using WINConnect.Models;
 
@@ -10,14 +12,14 @@ namespace WINConnect.Web.Controllers
 {
     public class AirFreightController : Controller
     {
-        private UnitOfWork _uow = new UnitOfWork();
+        private WINContext db = new WINContext();
         //
         // GET: /AirFreight/
         //public ActionResult Index(DateTime? fromDate, DateTime? toDate, string airline, string awbNumber, string countryCode, string eAwb, string sort, string sortDir, int? agentId, int? page, int pageSize = 50)
         public ActionResult Index(string agentname, string country, string refNumber, string carrier,
             DateTime? fromDate, DateTime? toDate, string sort, string sortDir, int page = 1, int pageSize = 15)
         {
-            IQueryable<ViewMAWB> mawbs = _uow.AirFreightRepository.Get();//.SearchMaster(fromDate, toDate, airline, awbNumber, countryCode, eAwb, sort, sortDir, agentId);
+            IQueryable<ViewMAWB> mawbs = db.ViewMAWBs;
 
             if (!agentname.IsEmpty())
             {
@@ -36,7 +38,8 @@ namespace WINConnect.Web.Controllers
 
             if (!refNumber.IsEmpty())
             {
-                mawbs = mawbs.Where(x => x.AwbNumber.Contains(refNumber));
+                refNumber = refNumber.RemoveSpecialCharacters();
+                mawbs = mawbs.Where(x => refNumber.Contains(x.AirlinePrefix + x.AwbNumber));
             }
             // From date
             if (fromDate.IsValidDateTime())
@@ -70,81 +73,28 @@ namespace WINConnect.Web.Controllers
 
         //
         // GET: /AirFreight/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            if (id == 0)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            ViewMAWB mawb = await db.ViewMAWBs.FindAsync(id);
+            if (mawb == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(mawb);
         }
 
-        //
-        // GET: /AirFreight/Create
-        public ActionResult Create()
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        //
-        // POST: /AirFreight/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            if (disposing)
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                db.Dispose();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /AirFreight/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /AirFreight/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /AirFreight/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /AirFreight/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            base.Dispose(disposing);
         }
     }
 }

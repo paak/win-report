@@ -11,14 +11,12 @@
 <table class="table table-condensed table-striped table-hover">
     <thead>
         <tr>
-            <th class="col-md-1">Country</th>
-            <th class="col-md-3">Agent</th>
-            <th class="col-md-1">Awb Number</th>
-            <th class="col-md-2">Airline</th>
+            <th class="col-md-4">Agent</th>
+            <th class="col-md-2">Air Waybill</th>
             <th class="col-md-1">eAwb</th>
             <th class="col-md-1">Houses</th>
             <th class="col-md-1">Route/Flight</th>
-            <th class="col-md-1">FWB SentOn</th>
+            <th class="col-md-2">FWB SentOn</th>
             <th class="col-md-1">Status</th>
         </tr>
     </thead>
@@ -27,16 +25,19 @@
         {
             <tr>
                 <td>
-                    @item.AgentCountry</td>
-                <td>
-                    @item.AgentName</td>
-                <td>
-                    @Html.ActionLink(string.Format("{0}-{1}", item.AirlinePrefix, item.AwbNumber),
-                                 "Details",
-                                 new { id = item.MawbId })
+                    <ul class="list-unstyled">
+                        <li>@item.AgentName</li>
+                        <li>@item.AgentCountry</li>
+                    </ul>
                 </td>
                 <td>
-                    @item.IATACode - @item.AirlineName</td>
+                    <ul class="list-unstyled">
+                        <li>@Html.ActionLink(string.Format("{0}-{1}", item.AirlinePrefix, item.AwbNumber),
+                                 "Details",
+                                 new { id = item.MawbId })</li>
+                        <li>@item.IATACode-@item.AirlineName</li>
+                    </ul>
+                </td>
                 <td>
                     @Html.Raw(item.eAwb.ToIcon())</td>
                 <td>
@@ -57,7 +58,7 @@
                 </td>
                 <td>
                     <ul class="list-unstyled">
-                        <li>@item.MawbSentOn.GetTimeSpan()</li>
+                        <li class="small">@item.MawbSentOn.GetTimeSpan()</li>
                         <li><a href="#" class="openmodal" data-url="/fwb?mawbId=@item.MawbId" data-toggle="modal" data-target="#myModal">
                             @item.MawbSentOn
                         </a></li>
@@ -66,11 +67,11 @@
                 <td>
                     @if (item.MawbStatus != "ShipmentAccepted")
                     {
-                        @item.MawbStatus
+                        <span class="warning">@item.MawbStatus</span>
                     }
                     else
                     {
-                        <a href="#" class="openmodal" data-url="/FSU?AwbPrefix=@item.AirlinePrefix&AwbNumber=@item.AwbNumber" data-toggle="modal" data-target="#myModal">@item.MawbStatus</a>
+                        <a href="#" class="openmodal" data-url="/FSU?AwbPrefix=@item.AirlinePrefix&AwbNumber=@item.AwbNumber" data-toggle="modal" data-target="#myModal"><span class="success">@item.MawbStatus</span></a>
                     }
                 </td>
             </tr>

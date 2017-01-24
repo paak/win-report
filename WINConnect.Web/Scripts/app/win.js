@@ -96,4 +96,69 @@
         });
     });
     */
+
+    // Auto complete
+    var cache = {};
+    $("#agentName").autocomplete({
+        minLength: 3,
+        source: function (request, response) {
+            var term = request.term;
+            if (term in cache) {
+                response(cache[term]);
+                return;
+            }
+
+            $.ajax({
+                url: "/search/agent",
+                dataType: "json",
+                data: { term: request.term },
+                success: function (data) {
+                    cache[term] = data;
+                    response(data);
+                }
+            });
+        }
+    }).data("ui-autocomplete")._renderItem = function (ul, item) {
+        var $a = $("<a></a>").text(item.label);
+        highlightText(this.term, $a);
+        return $("<li></li>").append($a).appendTo(ul);
+    };
+
+    $("#country").autocomplete({
+        minLength: 3,
+        source: function (request, response) {
+            var term = request.term;
+            if (term in cache) {
+                response(cache[term]);
+                return;
+            }
+
+            $.ajax({
+                url: "/search/country",
+                dataType: "json",
+                data: { term: request.term },
+                success: function (data) {
+                    cache[term] = data;
+                    response(data);
+                }
+            });
+        }
+    }).data("ui-autocomplete")._renderItem = function (ul, item) {
+        var $a = $("<a></a>").text(item.label);
+        highlightText(this.term, $a);
+        return $("<li></li>").append($a).appendTo(ul);
+    };
+
+    function highlightText(text, $node) {
+        var searchText = $.trim(text).toLowerCase(), currentNode = $node.get(0).firstChild, matchIndex, newTextNode, newSpanNode;
+        while ((matchIndex = currentNode.data.toLowerCase().indexOf(searchText)) >= 0) {
+            newTextNode = currentNode.splitText(matchIndex);
+            currentNode = newTextNode.splitText(searchText.length);
+            newSpanNode = document.createElement("span");
+            newSpanNode.className = "highlight";
+            currentNode.parentNode.insertBefore(newSpanNode, currentNode);
+            newSpanNode.appendChild(newTextNode);
+        }
+    }
+
 });

@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 using WINConnect.Enum.Shipment;
 using WINConnect.Models;
 
@@ -10,26 +10,38 @@ namespace WINConnect.Web.Controllers
 {
     public class QuotesController : Controller
     {
-        private UnitOfWork _uow = new UnitOfWork();
+        private WINContext db = new WINContext();
         //
         // GET: /Quote/
         public ActionResult Index(string agentname, string country, string refNumber, string carrier,
             string mode, ShipmentStatus? status,
             DateTime? fromDate, DateTime? toDate, string sort, string sortDir, int page = 1, int pageSize = 15)
         {
-            IQueryable<Shipment> shipments = _uow.ShipmentRepository.Get();
+            IQueryable<Shipment> shipments = db.Shipments;
 
             if (!string.IsNullOrWhiteSpace(agentname))
             {
-                shipments = shipments.Where(x => x.Title.Contains(agentname));
+                agentname = agentname.ToLower().Trim();
+                shipments = shipments
+                    .Where(x => x.Exporter.Agent.AgentName.ToLower().Contains(agentname)
+                        || x.RFQs.Any(y => y.Recipient.AgentName.ToLower().Contains(agentname)));
             }
 
-            if (mode != null)
+            if (!string.IsNullOrWhiteSpace(country))
+            {
+                country = country.ToLower().Trim();
+
+                shipments = shipments
+                    .Where(x => x.Exporter.Agent.Country.Name.ToLower().Contains(country)
+                        || x.RFQs.Any(y => y.Recipient.Country.Name.ToLower().Contains(country)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(mode))
             {
                 shipments = shipments.Where(x => x.TransportMode.Code == mode.ToString());
             }
 
-            if (status != null)
+            if (!string.IsNullOrWhiteSpace(null))
             {
                 /* Draft
                    Sent
@@ -48,7 +60,6 @@ namespace WINConnect.Web.Controllers
                     shipments = shipments.Where(x => new string[] { "Cancelled", "Expired", "Declined" }.Contains(x.Status.Code));
                 }
             }
-            //shipments.Where(x => x.RFQs.Any(y => y.Status.Code == ""));
             shipments = shipments.OrderByDescending(x => x.UpdatedOn);
 
             IPagedList<Shipment> data = shipments.ToPagedList(page, pageSize);
@@ -63,76 +74,13 @@ namespace WINConnect.Web.Controllers
             return View();
         }
 
-        //
-        // GET: /Quote/Create
-        public ActionResult Create()
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        //
-        // POST: /Quote/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            if (disposing)
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                db.Dispose();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /Quote/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /Quote/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /Quote/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /Quote/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            base.Dispose(disposing);
         }
     }
 }

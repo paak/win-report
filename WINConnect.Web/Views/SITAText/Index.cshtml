@@ -1,0 +1,22 @@
+﻿@model FileInfo[]
+
+@using WINConnect.Libs.Extensions;
+@{
+    ViewBag.Title = "SITA Text";
+}
+
+<h2>SITAText out folder</h2>
+
+@if (Model != null)
+{
+    <ol>
+        @foreach (FileInfo f in Model)
+        {
+            <li>@f.Name - @f.CreationTimeUtc (@f.CreationTimeUtc.GetTimeSpan())</li>
+        }
+    </ol>
+}
+else
+{
+    @("No file found.");
+}

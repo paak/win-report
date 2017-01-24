@@ -92,11 +92,13 @@
                 <div class="row">
                     @foreach (var item in ViewBag.Roles)
                     {
-                        <div class="col-md-2 checkbox">
-                            <label>
-                                <input type="checkbox" name="Agent_Roles" id="@item.Name" value="@item.Id" @(Model.Roles.FirstOrDefault(x => x.RoleId == item.Id) != null ? "checked" : "") >
-                                @item.Name
-                            </label>
+                        <div class="col-md-2">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="Agent_Roles" id="@item.Name" value="@item.Id" @(Model.Roles.FirstOrDefault(x => x.RoleId == item.Id) != null ? "checked" : "") />
+                                    @item.Name
+                                </label>
+                            </div>
                         </div>
                     }
                 </div>
@@ -104,7 +106,7 @@
 
             <fieldset>
                 <legend>Contact</legend>
-                <table class="table-no-border table-condensed">
+                <table class="table table-no-border table-condensed">
                     <tr>
                         <th class="col-md-1">ID</th>
                         <th class="col-md-1">Type</th>
@@ -132,7 +134,7 @@
 
                             </td>
                             <td class="col-md-3">
-                                <ul class="list-inline">
+                                <ul class="small list-inline">
                                     @foreach (var r in item.Roles)
                                     {
                                         <li>@r.Role.Name</li>
@@ -141,7 +143,7 @@
                             </td>
                             <td class="col-md-2">
                                 <a class="mreq" href="#" data-url="/contact/details/@item.ContactId"><i class="fa fa-eye"></i></a>
-                                <div class="mreq_result" />
+                                <div class="mreq_result small" />
                             </td>
                         </tr>
                     }

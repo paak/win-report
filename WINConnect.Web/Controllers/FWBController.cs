@@ -20,5 +20,14 @@ namespace WINConnect.Web.Controllers
 
             return View(fwbs);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

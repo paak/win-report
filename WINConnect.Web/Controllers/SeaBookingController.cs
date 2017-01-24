@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 using WINConnect.Libs.Extensions;
 using WINConnect.Models;
 
@@ -10,14 +10,14 @@ namespace WINConnect.Web.Controllers
 {
     public class SeaBookingController : Controller
     {
-        private UnitOfWork _uow = new UnitOfWork();
+        private WINContext db = new WINContext();
 
         //
         // GET: /SeaBooking/
         public ActionResult Index(string agentname, string country, string refNumber, string carrier,
             DateTime? fromDate, DateTime? toDate, string sort, string sortDir, int page = 1, int pageSize = 15)
         {
-            IQueryable<SeaBooking> seaBookings = _uow.SeaBookingRepository.Get(includeProperties: "Carrier");
+            IQueryable<SeaBooking> seaBookings = db.SeaBookings;//.Includes(x;//.SeaBookingRepository.Get(includeProperties: "Carrier");
 
             // No WCA
             seaBookings = seaBookings.Where(x => !x.Created.Agent.AgentName.Contains("WCA"));
@@ -122,76 +122,13 @@ namespace WINConnect.Web.Controllers
             return View();
         }
 
-        //
-        // GET: /SeaBooking/Create
-        public ActionResult Create()
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        //
-        // POST: /SeaBooking/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            if (disposing)
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                db.Dispose();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /SeaBooking/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /SeaBooking/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /SeaBooking/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /SeaBooking/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            base.Dispose(disposing);
         }
     }
 }

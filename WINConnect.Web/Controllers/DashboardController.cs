@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using WINConnect.Data.Configuration.EntityFramework;
 
@@ -41,6 +38,15 @@ namespace WINConnect.Web.Controllers
                 FFRCount = ffrCount;
                 SeaBookingCount = seaBookingCount;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

@@ -1,17 +1,17 @@
 ﻿using System.Web.Mvc;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 
 namespace WINConnect.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public UnitOfWork _uow = new UnitOfWork();//{ get; set; }
-        //private WINDbContext db = new WINDbContext();
+        public WINContext db = new WINContext();
+
         public ActionResult Index()
         {
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
 
-            var agents = _uow.AgentRepository.Get();
+            var agents = db.Agents;
 
             return View(agents);
         }
@@ -28,6 +28,15 @@ namespace WINConnect.Web.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

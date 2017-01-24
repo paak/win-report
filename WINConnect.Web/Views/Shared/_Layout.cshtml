@@ -8,7 +8,7 @@
     <title>@ViewBag.Title - @Application.Name</title>
     <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" />
     @* theme-color - The colour of the toolbar in Chrome M39+
-       See http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android *@
+        See http://updates.html5rocks.com/2014/11/Support-for-theme-color-in-Chrome-39-for-Android *@
     <meta name="theme-color" content="#1E1E1E">
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fa")
@@ -35,6 +35,7 @@
                         @Html.MenuLink("AirBooking", "Index", "AirBooking")
                         @Html.MenuLink("AirFreight", "Index", "AirFreight")
                         @Html.MenuLink("SeaBooking", "Index", "SeaBooking")
+                        @Html.MenuLink("JobOrder", "Index", "JobOrder")
                     </ul>
                     @Html.Partial("_LoginPartial")
                 </div>
@@ -74,5 +75,6 @@
     @Scripts.Render("~/scripts/bootstrap")
     @Scripts.Render("~/scripts/winapp")
     @RenderSection("scripts", required: false)
+    @StackExchange.Profiling.MiniProfiler.RenderIncludes()
 </body>
 </html>

@@ -1,0 +1,96 @@
+﻿@using PagedList;
+@using WINConnect.Libs.Extensions;
+
+@model IPagedList<JobMaster>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@Html.Partial("_SearchForm")
+
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>Sent Date</th>
+            <th>Mode</th>
+            <th>Job No.</th>
+            <th>Job Status</th>
+            @*<th>Reference</th>*@
+            <th>Sender</th>
+            <th>Recipient</th>
+            @*<th>Shipment Type</th>*@
+            <th>Origin</th>
+            <th>Destination</th>
+            <th>BL/AWB No.</th>
+            @*<th>House count</th>*@
+            @*<th>Carrier</th>*@
+            @*<th>ETD</th>*@
+            @*<th>ETA</th>*@
+            <th>Latest Status - Sender</th>
+            <th>Latest Status - Recipient</th>
+            @*<th>Attachment</th>*@
+        </tr>
+    </thead>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@(item.JobSharedDate.HasValue ? item.JobSharedDate.Value.GetTimeSpan() : string.Empty)</td>
+        <td>@item.TransportMode.Code</td>
+        <td>@item.JobMasterNo</td>
+        <td>@item.JobStatus.Code</td>
+        @*<td>@item.UniqueReferenceID</td>*@
+        <td>Sender</td>
+        <td>
+            @foreach (var recipient in item.JobRecipients)
+            {
+                @recipient.Agent.AgentName
+                @recipient.Agent.Country.Name
+            }
+        </td>
+        @*<td>@(item.ShipmentType == null ? string.Empty : item.ShipmentType.Code)</td>*@
+        <td>
+            @{
+                var pol = item.JobMasterLocations.FirstOrDefault(x => x.LocationType.Code == "PortOfLoading");
+                if (pol != null)
+                {
+                    @pol.LocationName
+                }
+            }
+        </td>
+        <td>
+            @{
+                var pod = item.JobMasterLocations.FirstOrDefault(x => x.LocationType.Code == "PortOfDischarge");
+                if (pod != null)
+                {
+                    @pod.LocationName
+                }
+            }
+        </td>
+        <td>
+            <ul>
+                @foreach (var row in item.JobMasterReferences)
+            {
+                    <li>@row.ReferenceType.Code - @row.ReferenceNumber</li>
+                }
+            </ul>
+
+        </td>
+        @*<td></td>*@
+        @*<td></td>*@
+        @*<td></td>*@
+        @*<td></td>*@
+        <td></td>
+        <td>
+            <ul>
+                @foreach (var row in item.JobStatusEvents)
+            {
+                    <li>@row.SourceID - @row.StatusEvent.Code - @row.StatusEvent.Name</li>
+                }
+            </ul>
+        </td>
+        @*<td></td>*@
+    </tr>
+}
+</table>

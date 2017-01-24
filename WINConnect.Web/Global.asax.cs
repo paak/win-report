@@ -1,4 +1,5 @@
-﻿using System.Web.Helpers;
+﻿using StackExchange.Profiling;
+using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -20,11 +21,13 @@ namespace WINConnect.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-           
+
             GlobalConfiguration.Configure(JsonConfig.Register);
             GlobalConfiguration.Configure(WebApiConfig.Register);
             //AuthConfig.RegisterAuth();
             GlobalConfiguration.Configuration.Filters.Add(new System.Web.Http.AuthorizeAttribute());
+
+            StackExchange.Profiling.EntityFramework6.MiniProfilerEF6.Initialize();
         }
 
         /// <summary>
@@ -57,6 +60,18 @@ namespace WINConnect.Web
             // AntiForgeryConfig.RequireSsl = true;
         }
 
+        protected void Application_BeginRequest()
+        {
+            if (Request.IsLocal)
+            {
+                MiniProfiler.Start();
+            }
+        }
+
+        protected void Application_EndRequest()
+        {
+            MiniProfiler.Stop();
+        }
     }
 
     public class CSharpRazorViewEngine : RazorViewEngine

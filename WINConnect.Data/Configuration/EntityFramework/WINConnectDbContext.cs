@@ -11,6 +11,12 @@ namespace WINConnect.Data.Configuration.EntityFramework
         public WINContext()
             : base("WINContext")
         {
+            Configuration.AutoDetectChangesEnabled = false;
+            Configuration.LazyLoadingEnabled = true;
+            Configuration.ProxyCreationEnabled = true;
+            Configuration.ValidateOnSaveEnabled = false;
+
+            Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
         }
 
         static WINContext()
@@ -71,9 +77,13 @@ namespace WINConnect.Data.Configuration.EntityFramework
         public DbSet<PortalToXmlLog> FWBs { get; set; }
         public DbSet<FWBLog> FWBLog { get; set; }
 
+        /* Job Order */
+        public DbSet<JobMaster> JobMaster { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
             //modelBuilder.Entity<Article>().Property(a => a.CreatedDate).HasColumnType("datetime2").HasPrecision(0);
             //modelBuilder.Entity<Article>().Property(a => a.ModifiedDate).HasColumnType("datetime2").HasPrecision(0);

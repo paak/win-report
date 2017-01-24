@@ -150,6 +150,7 @@ namespace WINConnect.Libs.Extensions
         }
 
         /* http://codereview.stackexchange.com/questions/2738/pretty-date-generator */
+        /* http://snipplr.com/view/53628/pretty-date-facebooktwitter-style--x-monthsweeksdayshoursminutesseconds-ago */
         /// <summary>
         /// Gets the relative time for a datetime.
         /// </summary>
@@ -166,23 +167,23 @@ namespace WINConnect.Libs.Extensions
 
             if (diff.TotalMinutes < 1)
             {
-                return string.Format("{0:D2} second{1} ago", diff.Seconds, PluralizeIfNeeded(diff.Seconds));
+                return string.Format("{0} second{1}", diff.Seconds, PluralizeIfNeeded(diff.Seconds));
             }
 
             if (diff.TotalHours < 1)
             {
-                return string.Format("{0:D2} minute{1} ago", diff.Minutes, PluralizeIfNeeded(diff.Minutes));
+                return string.Format("{0} minute{1}", diff.Minutes, PluralizeIfNeeded(diff.Minutes));
             }
 
             if (diff.TotalDays < 1)
             {
-                return string.Format("{0:D2} hour{2} and {1:D2} minute{3} ago", diff.Hours, diff.Minutes, PluralizeIfNeeded(diff.Hours), PluralizeIfNeeded(diff.Minutes));
+                return string.Format("{0} hour{2} and {1} minute{3}", diff.Hours, diff.Minutes, PluralizeIfNeeded(diff.Hours), PluralizeIfNeeded(diff.Minutes));
             }
 
             if (diff.TotalDays <= 2)
             {
                 return string.Format(
-                    "{0:D2} day{3}, {1:D2} hour{4} and {2:D2} minute{5} ago",
+                    "{0} day{3}, {1} hour{4} and {2} minute{5}",
                     diff.Days,
                     diff.Hours,
                     diff.Minutes,
@@ -193,13 +194,20 @@ namespace WINConnect.Libs.Extensions
 
             if (diff.TotalDays <= 30)
             {
-                return string.Format("{0:D2} days ago", diff.Days);
+                return string.Format("{0} days", diff.Days);
+            }
+
+            if (diff.TotalDays <= 365)
+            {
+                int month = (int)diff.Days / 30;
+
+                return string.Format("{0} month{1}", month, PluralizeIfNeeded(month));
             }
 
             int years = (int)(diff.TotalDays / 365);
             if (years >= 1)
             {
-                return string.Format("{0} year{1} ago", years, PluralizeIfNeeded(years));
+                return string.Format("{0} year{1}", years, PluralizeIfNeeded(years));
             }
 
             return string.Format("{0:g}", dateTime);

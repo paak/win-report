@@ -35,5 +35,14 @@ namespace WINreport.Controllers
             Response.TransmitFile(filePath + fileName);
             Response.End();
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

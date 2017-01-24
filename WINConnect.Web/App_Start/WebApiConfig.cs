@@ -17,7 +17,7 @@ namespace WINConnect.Web
             // For more information, visit http://go.microsoft.com/fwlink/?LinkId=279712.
             //config.EnableQuerySupport();
 
-            //config.MapHttpAttributeRoutes();
+            config.MapHttpAttributeRoutes();
         }
     }
 }

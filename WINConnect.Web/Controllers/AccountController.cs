@@ -3,8 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 using WINConnect.Libs.Crypto;
+using WINConnect.Models;
 
 namespace WINConnect.Web.Controllers
 {
@@ -19,7 +20,7 @@ namespace WINConnect.Web.Controllers
 
     public class AccountController : Controller
     {
-        private UnitOfWork _uow = new UnitOfWork();
+        private WINContext db = new WINContext();
 
         //
         // GET: /Account/Login
@@ -41,11 +42,12 @@ namespace WINConnect.Web.Controllers
             if (ModelState.IsValid)// && WebSecurity.Login(model.Username, model.Password, persistCookie: model.RememberMe))
             {
                 string encryptedPassword = WINCrypto.Encrypt(model.Password);
-                var contact = _uow.ContactRepository.Get(x =>
-                    x.Roles.Any(y => y.Role.Name.Equals("administrator", StringComparison.OrdinalIgnoreCase)) &&
-                    x.Username.Equals(model.Username, StringComparison.OrdinalIgnoreCase) &&
-                    x.Memberships.Password.Equals(encryptedPassword, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
+                IQueryable<Contact> contact = db.Contacts
+                    .AsNoTracking()
+                    .Where(x =>
+                        x.Roles.Any(y => y.Role.Name.Equals("administrator", StringComparison.OrdinalIgnoreCase)) &&
+                        x.Username.Equals(model.Username, StringComparison.OrdinalIgnoreCase) &&
+                        x.Memberships.Password.Equals(encryptedPassword, StringComparison.OrdinalIgnoreCase));
 
                 if (contact != null)
                 {
@@ -60,24 +62,6 @@ namespace WINConnect.Web.Controllers
             ModelState.AddModelError("", "The user name or password provided is incorrect.");
             return View(model);
         }
-
-        //[HttpPost]
-        //public ActionResult Login(Models.User user)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (user.IsValid(user.UserName, user.Password))
-        //        {
-        //            FormsAuthentication.SetAuthCookie(user.UserName, user.RememberMe);
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError("", "Login data is incorrect!");
-        //        }
-        //    }
-        //    return View(user);
-        //}
 
         //
         // POST: /Account/LogOff
@@ -109,5 +93,14 @@ namespace WINConnect.Web.Controllers
             RemoveLoginSuccess,
         }
         #endregion
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

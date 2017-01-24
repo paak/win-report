@@ -1,5 +1,10 @@
 ﻿@model IEnumerable<WINConnect.Models.FWBLog>
 
+@{
+    Layout = null;
+    ViewBag.Title = "Air booking";
+}
+
 @if (Model != null)
 {
     <table class="table table-condensed">
@@ -14,7 +19,7 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.MessageType</td>
+                    <td>@item.MessageType.Name</td>
                     <td>@item.Message_Format</td>
                     <td>@item.SentOn</td>
                 </tr>

@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using System.Web.Mvc;
-using WINConnect.Data;
+using WINConnect.Data.Configuration.EntityFramework;
 using WINConnect.Libs.Extensions;
 using WINConnect.Models;
 
@@ -10,13 +10,13 @@ namespace WINConnect.Web.Controllers
 {
     public class AirBookingController : Controller
     {
-        private UnitOfWork _uow = new UnitOfWork();
+        private WINContext db = new WINContext();
         //
         // GET: /AirBooking/
         public ActionResult Index(string agentname, string country, string refNumber, string carrier,
             DateTime? fromDate, DateTime? toDate, string sort, string sortDir, int page = 1, int pageSize = 15)
         {
-            IQueryable<AirBooking> bookings = _uow.AirBookingRepository.Get();
+            IQueryable<AirBooking> bookings = db.AirBookings;
 
             // No WCA
             bookings = bookings.Where(x => !x.AgentName.Contains("WCA"));
@@ -38,7 +38,8 @@ namespace WINConnect.Web.Controllers
 
             if (!refNumber.IsEmpty())
             {
-                bookings = bookings.Where(x => x.AWBNumber.Contains(refNumber));
+                refNumber = refNumber.RemoveSpecialCharacters();
+                bookings = bookings.Where(x => refNumber.Contains(x.AirlinePrefix + x.AWBNumber));
             }
             // From date
             if (fromDate.IsValidDateTime())
@@ -70,76 +71,13 @@ namespace WINConnect.Web.Controllers
             return View();
         }
 
-        //
-        // GET: /AirBooking/Create
-        public ActionResult Create()
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        //
-        // POST: /AirBooking/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            if (disposing)
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                db.Dispose();
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /AirBooking/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /AirBooking/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        //
-        // GET: /AirBooking/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /AirBooking/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            base.Dispose(disposing);
         }
     }
 }
