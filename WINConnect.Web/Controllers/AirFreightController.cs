@@ -47,6 +47,9 @@ namespace WINConnect.Web.Controllers
                 mawbs = mawbs.Where(x => x.MawbSentOn.Year >= fromDate.Value.Year
                                         && x.MawbSentOn.Month >= fromDate.Value.Month
                                         && x.MawbSentOn.Day >= fromDate.Value.Day);
+            }else
+            {
+                fromDate = DateTime.UtcNow.AddDays(-14);
             }
 
             // To date
@@ -55,6 +58,10 @@ namespace WINConnect.Web.Controllers
                 mawbs = mawbs.Where(x => x.MawbSentOn.Year <= toDate.Value.Year
                                         && x.MawbSentOn.Month <= toDate.Value.Month
                                         && x.MawbSentOn.Day <= toDate.Value.Day);
+            }
+            else
+            {
+                toDate = DateTime.UtcNow;
             }
 
             mawbs = mawbs.OrderByDescending(x => x.MawbSentOn);

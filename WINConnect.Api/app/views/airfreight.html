@@ -1,0 +1,95 @@
+﻿<h3>Airfreight</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <input type="text" class="form-control input-sm" placeholder="Agent Name" data-ng-model="pagingInfo.agentName" />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control input-sm" placeholder="From Date" data-ng-model="pagingInfo.fromDate" />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control input-sm" placeholder="To Date" data-ng-model="pagingInfo.toDate" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <input type="text" class="form-control input-sm" placeholder="Country" data-ng-model="pagingInfo.country" />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control input-sm" placeholder="Origin" data-ng-model="pagingInfo.origin" />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control input-sm" placeholder="Destination" data-ng-model="pagingInfo.destination" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <input type="text" class="form-control input-sm" placeholder="Carrier" data-ng-model="pagingInfo.carrier" />
+    </div>
+    <div class="col-md-4">
+        <input type="text" class="form-control input-sm" placeholder="AWB Number" data-ng-model="pagingInfo.refNumber" />
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary btn-sm" ng-click="search()">Search</button>
+    </div>
+</div>
+
+<ul uib-pagination class="pagination-sm"
+    ng-hide="!awbs.awbs"
+    ng-change="pageChanged()"
+    total-items="totalItems"
+    ng-model="currentPage"
+    max-size="5"
+    boundary-link-numbers="true"
+    rotate="false"></ul>
+
+<table class="table table-condensed table-striped" ng-hide="!awbs.awbs">
+    <thead>
+        <tr>
+            <th class="col-md-4">Agent</th>
+            <th class="col-md-2">Air Waybill</th>
+            <th class="col-md-1">eAwb</th>
+            <th class="col-md-1">Houses</th>
+            <th class="col-md-1">Route/Flight</th>
+            <th class="col-md-2">FWB SentOn</th>
+            <th class="col-md-1">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-ng-repeat="awb in awbs.awbs">
+            <td>
+                <ul class="list-unstyled">
+                    <li>{{awb.agentName}}</li>
+                    <li>{{awb.agentCountry}}</li>
+                </ul>
+            </td>
+            <td>
+                <ul class="list-unstyled">
+                    <li>{{awb.airlinePrefix}}-{{awb.awbNumber}}</li>
+                    <li>{{awb.iataCode}} - {{awb.airlineName}}</li>
+                </ul>
+            </td>
+            <td>
+                <input type="checkbox" data-ng-model="awb.eAwb" disabled="disabled">
+            </td>
+            <td>
+                {{awb.hawbCount}}
+            </td>
+            <td>
+                <ul class="list-unstyled">
+
+                    <li>{{awb.origin}} - {{awb.destination}}</li>
+                    <li>{{awb.flightDate | date : 'MM-dd'}}</li>
+                </ul>
+            </td>
+            <td>
+                {{awb.mawbSentOn}}
+            </td>
+            <td>
+                {{awb.mawbStatus}}
+            </td>
+        </tr>
+    </tbody>
+</table>
